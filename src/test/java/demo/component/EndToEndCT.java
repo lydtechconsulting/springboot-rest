@@ -4,7 +4,7 @@ import demo.rest.api.CreateItemRequest;
 import demo.rest.api.UpdateItemRequest;
 import demo.util.TestRestData;
 import dev.lydtech.component.framework.client.service.ServiceClient;
-import dev.lydtech.component.framework.extension.TestContainersSetupExtension;
+import dev.lydtech.component.framework.extension.ComponentTestExtension;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
-@ExtendWith(TestContainersSetupExtension.class)
+@ExtendWith(ComponentTestExtension.class)
 @ActiveProfiles("component-test")
 public class EndToEndCT {
 
