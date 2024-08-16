@@ -1,13 +1,17 @@
 package demo.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import demo.domain.Item;
 import demo.exception.ItemNotFoundException;
 import demo.rest.api.CreateItemRequest;
 import demo.rest.api.GetItemResponse;
+import demo.rest.api.GetItemsResponse;
 import demo.rest.api.UpdateItemRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,6 +59,17 @@ public class ItemService {
             throw new ItemNotFoundException();
         }
         return getItemResponse;
+    }
+
+    public GetItemsResponse getItems() {
+        List<Item> items = new ArrayList(itemStore.values());
+        List<GetItemResponse> itemResponses = items.stream()
+                .map(item -> GetItemResponse.builder()
+                        .id(item.getId())
+                        .name(item.getName())
+                        .build())
+                .collect(Collectors.toList());
+        return GetItemsResponse.builder().itemResponses(itemResponses).build();
     }
 
     public void deleteItem(UUID itemId) {

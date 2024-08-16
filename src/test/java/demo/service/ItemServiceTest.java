@@ -1,18 +1,22 @@
 package demo.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import demo.exception.ItemNotFoundException;
 import demo.rest.api.CreateItemRequest;
 import demo.rest.api.GetItemResponse;
+import demo.rest.api.GetItemsResponse;
 import demo.rest.api.UpdateItemRequest;
 import demo.util.TestRestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,13 +30,28 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void testCreateItem() {
+    public void testCreateAndGetItem() {
         CreateItemRequest request = TestRestData.buildCreateItemRequest(randomAlphabetic(8));
         UUID newItemId = service.createItem(request);
 
         GetItemResponse itemResponse = service.getItem(newItemId);
         assertThat(itemResponse.getId(), equalTo(newItemId));
         assertThat(itemResponse.getName(), equalTo(request.getName()));
+    }
+
+    @Test
+    public void testCreateAndGetItems() {
+        CreateItemRequest request1 = TestRestData.buildCreateItemRequest(randomAlphabetic(8));
+        CreateItemRequest request2 = TestRestData.buildCreateItemRequest(randomAlphabetic(8));
+        service.createItem(request1);
+        service.createItem(request2);
+
+        GetItemsResponse itemsResponse = service.getItems();
+        assertThat(itemsResponse.getItemResponses().size(), equalTo(2));
+        List<String> itemNames = itemsResponse.getItemResponses().stream()
+                .map(GetItemResponse::getName)
+                .collect(toList());
+        assertThat(itemNames, containsInAnyOrder(request1.getName(), request2.getName()));
     }
 
     @Test

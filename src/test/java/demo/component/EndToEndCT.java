@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
@@ -57,6 +58,9 @@ public class EndToEndCT {
 
         // Ensure the name was updated.
         sendGetItemRequest(itemId, updateRequest.getName());
+
+        // Test GET all items.
+        sendGetItemsRequest(updateRequest.getName());
 
         // Test the DELETE endpoint to delete the item.
         sendDeleteRequest(itemId);
@@ -125,5 +129,16 @@ public class EndToEndCT {
                 .then()
                 .assertThat()
                 .statusCode(expectedHttpStatus.value());
+    }
+
+    private static void sendGetItemsRequest(String expectedName) {
+        given()
+                .when()
+                .get("/v1/items")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .body("itemResponses.name", hasItem(expectedName));
     }
 }

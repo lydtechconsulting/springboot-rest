@@ -5,6 +5,7 @@ import java.util.Map;
 import demo.DemoConfiguration;
 import demo.rest.api.CreateItemRequest;
 import demo.rest.api.GetItemResponse;
+import demo.rest.api.GetItemsResponse;
 import demo.rest.api.UpdateItemRequest;
 import demo.util.TestRestData;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import static java.util.UUID.randomUUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -69,5 +71,33 @@ public class EndToEndIntegrationTest {
         // Retrieve the deleted item - should return NOT FOUND.
         ResponseEntity<GetItemResponse> getItemResponseDeleted = restTemplate.getForEntity("/v1/items/"+itemId, GetItemResponse.class);
         assertThat(getItemResponseDeleted.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * A 404 NOT FOUND is returned if the item being requested does not exist.
+     */
+    @Test
+    public void testGetItem_NotFound() {
+        ResponseEntity<GetItemResponse> getItemResponse = restTemplate.getForEntity("/v1/items/"+randomUUID(), GetItemResponse.class);
+        assertThat(getItemResponse.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * Hit the REST endpoint to create multiple items and retrieve all.
+     */
+    @Test
+    public void testCreateAndGetMultipleItems() {
+        // Create the items.
+        int totalItems = 10;
+        for (int i=0; i<totalItems; i++) {
+            CreateItemRequest createItemRequest = TestRestData.buildCreateItemRequest(RandomStringUtils.randomAlphabetic(8).toLowerCase());
+            ResponseEntity<Void> createItemResponse = restTemplate.postForEntity("/v1/items", createItemRequest, Void.class);
+            assertThat(createItemResponse.getStatusCode(), equalTo(HttpStatus.CREATED));
+        }
+
+        // Retrieve the items.
+        ResponseEntity<GetItemsResponse> getItemsResponse = restTemplate.getForEntity("/v1/items", GetItemsResponse.class);
+        assertThat(getItemsResponse.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(getItemsResponse.getBody().getItemResponses().size(), equalTo(totalItems));
     }
 }

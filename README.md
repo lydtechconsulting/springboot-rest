@@ -65,6 +65,11 @@ The Spring Boot application should log the successful update of the item:
 Item updated with id: 653d06f08faa89580090466e - name: test-item-update
 ```
 
+Get all items that have been created using curl:
+```
+curl -i -X GET localhost:9001/v1/items
+```
+
 Delete the item using curl:
 ```
 curl -i -X DELETE localhost:9001/v1/items/653d06f08faa89580090466e
