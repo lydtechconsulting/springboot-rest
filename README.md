@@ -4,6 +4,8 @@ Demo Spring Boot application exposing a REST API to enable performing of CRUD op
 
 The application stores the created entity in memory.
 
+![Spring Boot application with REST API](springboot-rest.png)
+
 ## Running The Demo
 
 Build Spring Boot application with Java 17:
@@ -88,6 +90,8 @@ docker-compose down
 ## Component Tests
 
 Demonstrates spinning up the application in a docker container and hitting this via the REST API to create, retrieve, update, and delete an item.
+
+![Component testing the Spring Boot application](springboot-rest-component-test.png)
 
 For more on the component tests see: https://github.com/lydtechconsulting/component-test-framework
 
